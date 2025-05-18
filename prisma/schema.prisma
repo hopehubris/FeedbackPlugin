@@ -57,6 +57,8 @@ model Response {
   updatedAt     DateTime  @updatedAt
   feedbackId    String
   feedback      Feedback  @relation(fields: [feedbackId], references: [id])
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
 }
 
 model Settings {
