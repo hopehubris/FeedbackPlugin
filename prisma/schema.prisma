@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  role          Role      @default(USER)
+  status        String    @default("active")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLogin     DateTime?
+  feedback      Feedback[]
+  responses     Response[]
+  apps          App[]
+}
+
+model App {
+  id            String    @id @default(cuid())
+  name          String
+  domain        String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  feedback      Feedback[]
+}
+
+model Feedback {
+  id            String    @id @default(cuid())
+  rating        Int
+  comment       String?   @db.Text
+  pageUrl       String
+  userEmail     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  appId         String
+  app           App       @relation(fields: [appId], references: [id])
+  user          User?     @relation(fields: [userId], references: [id])
+  userId        String?
+  responses     Response[]
+}
+
+model Response {
+  id            String    @id @default(cuid())
+  content       String    @db.Text
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  feedbackId    String
+  feedback      Feedback  @relation(fields: [feedbackId], references: [id])
+}
+
+model Settings {
+  id                      String   @id @default("1")
+  widgetPosition         String   @default("bottom-right")
+  widgetColor           String   @default("#4A5568")
+  autoShowWidget        Boolean  @default(false)
+  autoShowDelay         Int      @default(30)
+  enableEmailNotifications Boolean @default(false)
+  notificationEmail     String?
+  enableAnalytics       Boolean  @default(true)
+  retentionPeriod       Int      @default(90)
+  maxFeedbackLength     Int      @default(1000)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+enum Role {
+  USER
+  DEVELOPER
+  PRODUCT_MANAGER
+  EXECUTIVE
+  ADMIN
+} 
