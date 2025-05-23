@@ -9,5 +9,5 @@
     "jsx": "preserve",
     "esModuleInterop": true
   },
-  "include": ["src"]
+  "include": ["src", "src/types/globals.d.ts"]
 }
